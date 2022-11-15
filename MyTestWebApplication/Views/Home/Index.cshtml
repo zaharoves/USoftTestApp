@@ -1,0 +1,85 @@
+﻿@using MyTestWebApplication.Models
+@model PageViewModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+<style>
+    .glyphicon { display: inline-block; padding:0 5px;}
+    .glyphicon-chevron-right:after { content: "\00BB"; }
+    .glyphicon-chevron-left:before { content: "\00AB"; }
+</style>
+
+<h1>Список записей</h1>
+
+
+<div>
+ @using (Html.BeginForm())
+{
+    <p>
+        Количество записей на странице: 
+        @Html.DropDownListFor(
+            m => m.PageSize, 
+            new SelectList(Model.AllPageSizes), 
+            new { onchange = @"form.submit();" })
+    </p>
+    <p>Страница: @Model.PageNumber/@Model.TotalPages</p>
+    <p>Всего записей: @Model.TotalRecords</p>
+}
+</div>
+<table class="table">
+    <tr>
+        <th>Id</th>
+        <th>Дата</th>
+        <th>Информация</th>
+    </tr>
+    @foreach (Record record in Model.Records)
+    {
+        <tr>
+            <td>@record.Id</td>
+            <td>@record.DateTime</td>
+            <td>@record.Information</td>
+        </tr>
+    }
+</table>
+
+<p>
+@if (Model.HasPreviousPage)
+{
+    <a asp-action="Index"
+       asp-route-firstPageRecord=1 
+       asp-route-pageSize="@(Model.PageSize)"
+       class="glyphicon glyphicon-chevron-left">
+        В начало
+    </a>
+}
+@if (Model.HasPreviousPage)
+{
+    <a 
+       asp-action="Index"
+       asp-route-firstPageRecord="@(Model.FirstPageRecord - Model.PageSize)" 
+       asp-route-pageSize="@(Model.PageSize)"
+       class="glyphicon glyphicon-chevron-left">
+        Назад
+    </a>
+}
+
+@if (Model.HasNextPage)
+{
+    <a asp-action="Index"
+       asp-route-firstPageRecord="@(Model.FirstPageRecord + Model.PageSize)" 
+       asp-route-pageSize="@(Model.PageSize)" 
+       class="glyphicon glyphicon-chevron-right">
+        Вперед
+    </a>
+}
+@if (Model.HasNextPage)
+{
+    <a asp-action="Index"
+       asp-route-firstPageRecord="@(Model.TotalRecords - Model.PageSize + 1)"
+       asp-route-pageSize="@(Model.PageSize)"
+       class="glyphicon glyphicon-chevron-right">
+        В конец
+    </a>
+}
+</p>
+
+
